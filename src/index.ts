@@ -1,6 +1,7 @@
 export * from './schema/script'
 export * from './shared/toonMaterial'
 export * from './studio/createStudioScene'
+export * from './studio/createMonitor'
 export * from './avatar/createAnnouncerAvatar'
 export * from './avatar/lipsync'
 export * from './avatar/idle'

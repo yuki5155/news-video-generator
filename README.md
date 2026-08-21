@@ -18,7 +18,14 @@ npm install news-video-generator three
 ## Usage
 
 ```ts
+import * as THREE from 'three'
 import { createStudioScene, createAnnouncerAvatar, driveLipsync } from 'news-video-generator'
+
+const renderer = new THREE.WebGLRenderer({ canvas })
+// Scene objects are already marked castShadow/receiveShadow — shadows only
+// actually render once you opt in here:
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 const { scene, camera } = createStudioScene()
 const avatar = createAnnouncerAvatar()

@@ -28,12 +28,15 @@ export function createAnnouncerAvatar(): Avatar {
   // so the torso doesn't swallow the face.
   const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, 0.5, 4, 8), suitMat)
   torso.position.y = 0.85
+  torso.castShadow = true
+  torso.receiveShadow = true
   group.add(torso)
 
   // z pushed just past the torso capsule's front surface (radius 0.26 at this
   // height) so the tie doesn't intersect/z-fight with the torso mesh.
   const tie = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.24, 0.02), tieMat)
   tie.position.set(0, 1.05, 0.29)
+  tie.castShadow = true
   group.add(tie)
 
   // Forearms lying flat on the desk (assumed desk-top height ~0.85, matching
@@ -46,6 +49,8 @@ export function createAnnouncerAvatar(): Avatar {
   const leftArm = new THREE.Mesh(armGeometry, suitMat)
   leftArm.position.set(-0.22, 0.9, 0.28)
   leftArm.rotation.set(Math.PI / 2, 0.18, 0)
+  leftArm.castShadow = true
+  leftArm.receiveShadow = true
   group.add(leftArm)
   const rightArm = leftArm.clone()
   rightArm.position.x = 0.22
@@ -59,6 +64,7 @@ export function createAnnouncerAvatar(): Avatar {
   group.add(headGroup)
 
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), skinMat)
+  head.castShadow = true
   headGroup.add(head)
 
   // A shallow cap over just the crown of the head, standing in for hair, so it
@@ -67,6 +73,7 @@ export function createAnnouncerAvatar(): Avatar {
     new THREE.SphereGeometry(0.225, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.4),
     hairMat,
   )
+  hair.castShadow = true
   headGroup.add(hair)
 
   const eyeGeometry = new THREE.SphereGeometry(0.02, 8, 8)

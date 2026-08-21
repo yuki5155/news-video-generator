@@ -34,6 +34,12 @@ export function createBackdropTexture(width = 128, height = 64): THREE.DataTextu
   const top = [28, 39, 51]
   const bottom = [13, 19, 25]
 
+  // A soft "spotlight" vignette centered where the monitor sits (upper-middle),
+  // fading to darker edges, so the wall reads as lit rather than flat/uniform.
+  const cx = width * 0.5
+  const cy = height * 0.32
+  const maxDist = Math.hypot(width * 0.5, height * 0.7)
+
   for (let y = 0; y < height; y++) {
     const t = y / (height - 1)
     const onGridLine = y % 32 === 0
@@ -41,9 +47,12 @@ export function createBackdropTexture(width = 128, height = 64): THREE.DataTextu
       const idx = (y * width + x) * 4
       const verticalLine = x % 32 === 0
       const boost = onGridLine || verticalLine ? 10 : 0
-      data[idx] = top[0]! + (bottom[0]! - top[0]!) * t + boost
-      data[idx + 1] = top[1]! + (bottom[1]! - top[1]!) * t + boost
-      data[idx + 2] = top[2]! + (bottom[2]! - top[2]!) * t + boost
+      const dist = Math.hypot(x - cx, y - cy) / maxDist
+      const vignette = Math.max(0, 1 - dist) * 16
+
+      data[idx] = top[0]! + (bottom[0]! - top[0]!) * t + boost + vignette
+      data[idx + 1] = top[1]! + (bottom[1]! - top[1]!) * t + boost + vignette
+      data[idx + 2] = top[2]! + (bottom[2]! - top[2]!) * t + boost + vignette
       data[idx + 3] = 255
     }
   }

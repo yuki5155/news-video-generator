@@ -20,10 +20,22 @@ export function createReenactmentScene(def: ReenactmentScene): ReenactmentStage 
 
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), createToonMaterial(0x22262b))
   ground.rotation.x = -Math.PI / 2
+  ground.receiveShadow = true
   scene.add(ground)
 
+  // Shadows only render once the consumer's renderer opts in:
+  // `renderer.shadowMap.enabled = true`.
   const key = new THREE.DirectionalLight(0xfff2e0, 1.2)
   key.position.set(3, 4, 2)
+  key.castShadow = true
+  key.shadow.mapSize.set(1024, 1024)
+  key.shadow.camera.left = -6
+  key.shadow.camera.right = 6
+  key.shadow.camera.top = 6
+  key.shadow.camera.bottom = -6
+  key.shadow.camera.near = 0.5
+  key.shadow.camera.far = 15
+  key.shadow.bias = -0.0015
   scene.add(key)
 
   const rim = new THREE.DirectionalLight(0x89b4ff, 0.6)
@@ -47,6 +59,8 @@ export function createReenactmentScene(def: ReenactmentScene): ReenactmentStage 
     const mesh = new THREE.Mesh(geometry, createToonMaterial(actor.color))
     mesh.position.set(...actor.position)
     mesh.name = actor.id
+    mesh.castShadow = true
+    mesh.receiveShadow = true
     scene.add(mesh)
     return mesh
   })
