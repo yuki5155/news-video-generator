@@ -12,7 +12,7 @@ describe('NewsScriptSchema', () => {
           type: 'reenactment',
           narration: 'Here is what happened.',
           actors: [{ id: 'car', shape: 'box', color: '#cc3333', position: [0, 0.25, 0] }],
-          cameraPath: [[0, 1.5, 4]],
+          cameraPath: [{ time: 0, position: [0, 1.5, 4] }],
         },
       ],
     })
