@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import type { ReenactmentActor, ReenactmentScene } from '../schema/script'
 import { createToonMaterial } from '../shared/toonMaterial'
-import { interpolatePosition } from '../shared/keyframes'
+import { interpolatePosition, interpolateRotationZ } from '../shared/keyframes'
 
 export interface ReenactmentStage {
   scene: THREE.Scene
@@ -133,6 +133,7 @@ export function createReenactmentScene(def: ReenactmentScene): ReenactmentStage 
   const actors = def.actors.map((actor) => {
     const object = buildActorObject(actor)
     object.position.set(...(actor.motion ? interpolatePosition(actor.motion, 0) : actor.position))
+    object.rotation.z = actor.motion ? interpolateRotationZ(actor.motion, 0) : 0
     object.scale.set(...actor.scale)
     object.name = actor.id
     scene.add(object)
@@ -148,6 +149,7 @@ export function createReenactmentScene(def: ReenactmentScene): ReenactmentStage 
       camera.position.set(...interpolatePosition(def.cameraPath, currentTimeSec))
       for (const { actor, object } of movingActors) {
         object.position.set(...interpolatePosition(actor.motion!, currentTimeSec))
+        object.rotation.z = interpolateRotationZ(actor.motion!, currentTimeSec)
       }
     },
   }

@@ -1,0 +1,20 @@
+title: "AIモデルと著作権書籍の学習について"
+beats:
+  - text: "AIモデルを著作権のある書籍で学習させることは合法なのか。"
+    scene: studio
+  - text: "専門家は非常に複雑な問題だと指摘します。"
+    scene: studio
+  - text: "著作権法ができたのは1976年、AI技術の急速な進化に追いついていません。"
+    scene: books
+  - text: "焦点は、学習が変革的な利用と言えるかどうかです。"
+    scene: books
+  - text: "アンソロピック社は先の訴訟で15億ドルの和解金を支払いました。"
+    scene: settlement
+  - text: "一方、トムソン・ロイターの裁判では、フェアユースが認められませんでした。"
+    scene: scale
+    params:
+      tiltDirection: left
+  - text: "判断はケースバイケース。"
+    scene: studio
+  - text: "法廷での決着はまだ先になりそうです。"
+    scene: studio

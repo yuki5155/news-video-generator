@@ -1,0 +1,36 @@
+title: "AIアシスタント「Instinct」に広がるプライバシー懸念"
+beats:
+  - text: "話題のAIアシスタント「Instinct」に、プライバシーとセキュリティ上の懸念が浮上しています。"
+    scene: studio
+  - text: "Instinctは非公開ベータ版で提供されている、AIパーソナルアシスタントです。"
+    scene: studio
+  - text: "メールやメッセージアプリ、カレンダー、音声、位置情報、画面にまでアクセスし、予約やフライト検索、メール整理をこなします。"
+    scene: network
+    params:
+      nodeCount: 6
+  - text: "開発を率いるのは、AI企業サイエラの元研究者ノア・シン氏。投資家にはクライナー・パーキンスやコンビクションが名を連ねます。"
+    scene: studio
+  - text: "利用者からは「魔法のようだ」と絶賛される一方、利用規約には懸念の声が上がっています。"
+    scene: studio
+  - text: "規約では、ユーザーのデータへの永続的かつ取消不可能なアクセス権をInstinctに認め、AIモデルの学習に使われる可能性も含まれています。"
+    scene: dataAccess
+    params:
+      itemCount: 4
+  - text: "ある利用者は、許可なくGmailの内容がインデックス化・保存されていたと指摘しました。"
+    scene: studio
+  - text: "別の利用者は、Google連携を解除した後もメールの要約を受け取り続けたと報告しています。"
+    scene: dataAccess
+    params:
+      itemCount: 3
+  - text: "セキュリティ専門家がInstinctに対して行ったフィッシングの試みは、あっさり成功してしまったといいます。"
+    scene: shield
+  - text: "確認なしに本人に代わってメールが送信された事例も報告されています。"
+    scene: shield
+    params:
+      breachColor: "#c0392b"
+  - text: "専門家は「必要なアクセス権限の判断を、企業任せにすべきではない」と警鐘を鳴らします。"
+    scene: studio
+  - text: "投資家からも「消費者のセキュリティ意識を大きく変えかねない」との懸念が出ています。"
+    scene: studio
+  - text: "Instinctチームは、こうした懸念への公式な回答をまだ示していません。"
+    scene: studio

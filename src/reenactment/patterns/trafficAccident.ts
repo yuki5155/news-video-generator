@@ -1,4 +1,4 @@
-import type { PositionKeyframe, ReenactmentScene } from '../../schema/script'
+import type { PositionKeyframeInput, ReenactmentSceneInput } from '../../schema/script'
 import { ReenactmentSceneSchema } from '../../schema/script'
 import type { ReenactmentPatternResolver } from './types'
 
@@ -41,6 +41,10 @@ const VEHICLE_SKID_FACTOR = 0.35
 // original crossing direction — and briefly airborne before landing.
 const PEDESTRIAN_KNOCKBACK_FACTOR = 1.4
 const PEDESTRIAN_AIRBORNE_LIFT = 0.3
+// The pedestrian tips from standing to lying flat over the knockback, instead
+// of landing back on their feet — a quarter turn, tumbling through half of
+// that mid-arc before ending up fully down.
+const PEDESTRIAN_FALL_ROTATION = Math.PI / 2
 
 // A short, deterministic camera jolt right at the moment of impact.
 const CAMERA_SHAKE_SEC = 0.16
@@ -58,8 +62,15 @@ const PEDESTRIAN_AXIS_SIGN: Record<TrafficAccidentParams['pedestrianDirection'],
  * Vehicle-vs-pedestrian traffic accident: the vehicle travels a straight line
  * along X, the pedestrian crosses it along Z, and both reach `collisionPoint`
  * at `collisionTimeSec`. On impact the vehicle brakes into a short skid and
- * the pedestrian is knocked (briefly airborne) in the vehicle's direction of
- * travel, while the camera dollies in and takes a quick jolt.
+ * the pedestrian is knocked (briefly airborne, tipping from standing to lying
+ * flat) in the vehicle's direction of travel, while the camera dollies in and
+ * takes a quick jolt.
+ *
+ * `rotationZ` tips a `person` actor around its feet (the group's local
+ * origin): rotating by -θ walks the head toward +X, by +θ toward -X (from
+ * `Rz(θ): x' = x·cosθ - y·sinθ`, evaluated at the head's `(0, h, 0)`). So a
+ * vehicle travelling toward +X (`vehicleSign = 1`) needs `rotationZ = -θ` to
+ * fall head-first the same way it hit — hence `-vehicleSign * fallRotation`.
  */
 export const trafficAccidentPattern: ReenactmentPatternResolver<TrafficAccidentParams> = (params) => {
   const {
@@ -85,23 +96,33 @@ export const trafficAccidentPattern: ReenactmentPatternResolver<TrafficAccidentP
   const endTime = collisionTimeSec + trailTimeSec
   const knockbackPeakTime = collisionTimeSec + trailTimeSec / 2
 
-  const vehicleMotion: PositionKeyframe[] = [
+  // Falls in the direction the vehicle was travelling (not the pedestrian's
+  // own crossing direction) — see the rotation matrix note in the pattern's
+  // doc comment above for why the sign is negated here.
+  const fallRotation = -vehicleSign * PEDESTRIAN_FALL_ROTATION
+
+  const vehicleMotion: PositionKeyframeInput[] = [
     { time: startTime, position: [cx - vehicleSign * leadDist, VEHICLE_GROUND_Y, cz] },
     { time: collisionTimeSec, position: [cx, VEHICLE_GROUND_Y, cz] },
     { time: endTime, position: [cx + vehicleSign * skidDist, VEHICLE_GROUND_Y, cz] },
   ]
 
-  const pedestrianMotion: PositionKeyframe[] = [
+  const pedestrianMotion: PositionKeyframeInput[] = [
     { time: startTime, position: [cx, PEDESTRIAN_GROUND_Y, cz - pedestrianSign * leadDist] },
     { time: collisionTimeSec, position: [cx, PEDESTRIAN_GROUND_Y, cz] },
     {
       time: knockbackPeakTime,
       position: [cx + vehicleSign * knockbackDist * 0.6, PEDESTRIAN_GROUND_Y + PEDESTRIAN_AIRBORNE_LIFT, cz],
+      rotationZ: fallRotation / 2,
     },
-    { time: endTime, position: [cx + vehicleSign * knockbackDist, PEDESTRIAN_GROUND_Y, cz] },
+    {
+      time: endTime,
+      position: [cx + vehicleSign * knockbackDist, PEDESTRIAN_GROUND_Y, cz],
+      rotationZ: fallRotation,
+    },
   ]
 
-  const cameraPath: PositionKeyframe[] = [
+  const cameraPath: PositionKeyframeInput[] = [
     { time: startTime, position: [cx, 1.6, cz + 4] },
     { time: collisionTimeSec - 0.15, position: [cx, 1.45, cz + 3.2] },
     { time: collisionTimeSec, position: [cx + 0.06, 1.5, cz + 3.15] },
@@ -110,7 +131,7 @@ export const trafficAccidentPattern: ReenactmentPatternResolver<TrafficAccidentP
     { time: endTime, position: [cx, 1.5, cz + 3.35] },
   ]
 
-  const scene: ReenactmentScene = {
+  const scene: ReenactmentSceneInput = {
     type: 'reenactment',
     narration,
     actors: [
@@ -119,7 +140,6 @@ export const trafficAccidentPattern: ReenactmentPatternResolver<TrafficAccidentP
         shape: 'vehicle',
         color: '#8a3a3a',
         position: vehicleMotion[0]!.position,
-        scale: [1, 1, 1],
         motion: vehicleMotion,
       },
       {
@@ -127,7 +147,6 @@ export const trafficAccidentPattern: ReenactmentPatternResolver<TrafficAccidentP
         shape: 'person',
         color: '#e8c547',
         position: pedestrianMotion[0]!.position,
-        scale: [1, 1, 1],
         motion: pedestrianMotion,
       },
     ],

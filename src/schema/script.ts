@@ -13,8 +13,16 @@ export type Vec3 = z.infer<typeof Vec3Schema>
 export const PositionKeyframeSchema = z.object({
   time: z.number().nonnegative(),
   position: Vec3Schema,
+  /**
+   * Rotation around the Z axis, in radians — e.g. tipping an actor from
+   * upright to lying flat to simulate a fall. Ignored for camera keyframes.
+   * Defaults to 0 (upright).
+   */
+  rotationZ: z.number().default(0),
 })
 export type PositionKeyframe = z.infer<typeof PositionKeyframeSchema>
+/** Input shape (pre-defaults) for a `PositionKeyframe` — use this to type keyframes you construct by hand, so fields with defaults (like `rotationZ`) stay optional until `.parse()` fills them in. */
+export type PositionKeyframeInput = z.input<typeof PositionKeyframeSchema>
 
 export const StudioSceneSchema = z.object({
   type: z.literal('studio'),
@@ -54,6 +62,8 @@ export const ReenactmentSceneSchema = z.object({
   cameraPath: z.array(PositionKeyframeSchema).min(1),
 })
 export type ReenactmentScene = z.infer<typeof ReenactmentSceneSchema>
+/** Input shape (pre-defaults) for a `ReenactmentScene` — use this to type scenes you construct by hand, before passing them through `.parse()`. */
+export type ReenactmentSceneInput = z.input<typeof ReenactmentSceneSchema>
 
 export const SceneSchema = z.discriminatedUnion('type', [StudioSceneSchema, ReenactmentSceneSchema])
 export type Scene = z.infer<typeof SceneSchema>

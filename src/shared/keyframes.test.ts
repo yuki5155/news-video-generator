@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { interpolatePosition } from './keyframes'
-import type { PositionKeyframe } from '../schema/script'
+import { interpolatePosition, interpolateRotationZ } from './keyframes'
+import type { PositionKeyframeInput } from '../schema/script'
 
 describe('interpolatePosition', () => {
-  const keyframes: PositionKeyframe[] = [
+  const keyframes: PositionKeyframeInput[] = [
     { time: 1, position: [0, 0, 0] },
     { time: 3, position: [4, 0, 0] },
   ]
@@ -31,5 +31,28 @@ describe('interpolatePosition', () => {
 
   it('throws when given no keyframes', () => {
     expect(() => interpolatePosition([], 0)).toThrow()
+  })
+})
+
+describe('interpolateRotationZ', () => {
+  const keyframes: PositionKeyframeInput[] = [
+    { time: 0, position: [0, 0, 0], rotationZ: 0 },
+    { time: 2, position: [0, 0, 0], rotationZ: Math.PI / 2 },
+  ]
+
+  it('linearly interpolates rotation between two keyframes', () => {
+    expect(interpolateRotationZ(keyframes, 1)).toBeCloseTo(Math.PI / 4)
+  })
+
+  it('clamps to the last keyframe after its time', () => {
+    expect(interpolateRotationZ(keyframes, 10)).toBeCloseTo(Math.PI / 2)
+  })
+
+  it('treats a missing rotationZ as 0 (upright)', () => {
+    const withoutRotation: PositionKeyframeInput[] = [
+      { time: 0, position: [0, 0, 0] },
+      { time: 2, position: [0, 0, 0] },
+    ]
+    expect(interpolateRotationZ(withoutRotation, 1)).toBe(0)
   })
 })

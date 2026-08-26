@@ -107,6 +107,37 @@ describe('trafficAccidentPattern', () => {
     expect(start).toBeDefined()
   })
 
+  it('tips the pedestrian from standing to lying flat instead of landing on their feet', () => {
+    const leftToRight = trafficAccidentPattern({
+      narration: '',
+      vehicleDirection: 'left-to-right',
+      pedestrianDirection: 'far-to-near',
+    })
+    const rightToLeft = trafficAccidentPattern({
+      narration: '',
+      vehicleDirection: 'right-to-left',
+      pedestrianDirection: 'far-to-near',
+    })
+
+    const motionOf = (scene: typeof leftToRight) => scene.actors.find((a) => a.id === 'pedestrian')!.motion!
+
+    for (const scene of [leftToRight, rightToLeft]) {
+      const [start, collision, airborne, landed] = motionOf(scene)
+      // Still upright when hit; airborne mid-tumble is a partial turn toward fully down.
+      expect(start!.rotationZ).toBe(0)
+      expect(collision!.rotationZ).toBe(0)
+      expect(Math.abs(airborne!.rotationZ)).toBeGreaterThan(0)
+      expect(Math.abs(airborne!.rotationZ)).toBeLessThan(Math.abs(landed!.rotationZ))
+      // A quarter turn — lying flat, not just tilted.
+      expect(Math.abs(landed!.rotationZ)).toBeCloseTo(Math.PI / 2)
+    }
+
+    // Falls toward the direction the vehicle was heading, so the fall direction flips with it.
+    const leftToRightLanded = motionOf(leftToRight).at(-1)!
+    const rightToLeftLanded = motionOf(rightToLeft).at(-1)!
+    expect(Math.sign(leftToRightLanded.rotationZ)).not.toBe(Math.sign(rightToLeftLanded.rotationZ))
+  })
+
   it('gives the camera a jolt right at the moment of impact', () => {
     const scene = trafficAccidentPattern({
       narration: '',

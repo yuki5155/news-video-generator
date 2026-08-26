@@ -78,4 +78,32 @@ describe('createReenactmentScene', () => {
     expect(stage.actors[0]?.children.length).toBeGreaterThan(1)
     expect(stage.actors[1]?.children.length).toBeGreaterThan(1)
   })
+
+  it('tips an actor over as it moves through motion keyframes with rotationZ', () => {
+    const def = ReenactmentSceneSchema.parse({
+      type: 'reenactment',
+      narration: '',
+      actors: [
+        {
+          id: 'walker',
+          shape: 'person',
+          position: [0, 0, 0],
+          motion: [
+            { time: 0, position: [0, 0, 0], rotationZ: 0 },
+            { time: 2, position: [1, 0, 0], rotationZ: Math.PI / 2 },
+          ],
+        },
+      ],
+      cameraPath: [{ time: 0, position: [0, 1.5, 4] }],
+    })
+
+    const stage = createReenactmentScene(def)
+    expect(stage.actors[0]?.rotation.z).toBe(0)
+
+    stage.update(1)
+    expect(stage.actors[0]?.rotation.z).toBeCloseTo(Math.PI / 4)
+
+    stage.update(2)
+    expect(stage.actors[0]?.rotation.z).toBeCloseTo(Math.PI / 2)
+  })
 })

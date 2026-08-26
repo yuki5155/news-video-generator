@@ -7,11 +7,19 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "news-video-generator": "./dist/cli.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./polly": {
+      "types": "./dist/polly.d.ts",
+      "import": "./dist/polly.js",
+      "require": "./dist/polly.cjs"
     }
   },
   "files": [
@@ -27,10 +35,19 @@
     "three": "^0.185.0"
   },
   "dependencies": {
+    "js-yaml": "^4.1.0",
     "zod": "^3.23.0"
   },
+  "optionalDependencies": {
+    "@aws-sdk/client-polly": "^3.658.0",
+    "playwright": "^1.47.0"
+  },
   "devDependencies": {
+    "@aws-sdk/client-polly": "^3.658.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
     "@types/three": "^0.185.3",
+    "playwright": "^1.47.0",
     "three": "^0.185.1",
     "tsup": "^8.3.0",
     "typescript": "^5.6.0",
